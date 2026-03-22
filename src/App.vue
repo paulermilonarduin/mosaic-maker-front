@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { getHelloWorld } from './api/hello';
+import MosaicLoadingScreen from './components/MosaicLoadingScreen.vue';
+import MosaicSpinner from './components/MosaicSpinner.vue';
 
 type RequestStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -39,18 +41,48 @@ async function handleButtonClick(): Promise<void> {
         <code>/api/hello-world</code>.
       </p>
 
+      <section class="spinner-preview" aria-labelledby="spinner-preview-title">
+        <div class="spinner-preview__visual">
+          <MosaicSpinner :size="132" label="Mosaic spinner preview" />
+        </div>
+        <div class="spinner-preview__copy">
+          <p id="spinner-preview-title" class="spinner-preview__eyebrow">
+            Spinner preview
+          </p>
+          <p class="spinner-preview__description">
+            Permanent preview of the Mosaic loading animation using the current
+            primary theme color.
+          </p>
+        </div>
+      </section>
+
       <button
         class="primary-button"
         type="button"
         :disabled="isLoading"
         @click="handleButtonClick"
       >
-        {{ isLoading ? 'Loading...' : 'Call hello-world' }}
+        <span class="primary-button__content">
+          <MosaicSpinner
+            v-if="isLoading"
+            class="primary-button__spinner"
+            :size="18"
+            decorative
+          />
+          <span>{{ isLoading ? 'Checking API...' : 'Call hello-world' }}</span>
+        </span>
       </button>
 
       <p v-if="status === 'idle'" class="hint">
         Click the button to test the API connection.
       </p>
+
+      <MosaicLoadingScreen
+        v-else-if="status === 'loading'"
+        :fullscreen="false"
+        label="Checking the local API"
+        message="The hello-world endpoint is being requested. This should only take a moment."
+      />
 
       <div
         v-else-if="status === 'success'"
